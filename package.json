@@ -1,0 +1,27 @@
+{
+  "name": "html-to-json",
+  "version": "0.1.0",
+  "description": "html 文本转化为微信小程序 rich-text 所需的 nodes 格式，每个节点增加对应 tag 的 class。",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noyobo/html-to-nodes.git"
+  },
+  "keywords": [
+    "html2json",
+    "nodes",
+    "rich-text"
+  ],
+  "author": "noyobo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/noyobo/html-to-nodes/issues"
+  },
+  "homepage": "https://github.com/noyobo/html-to-nodes#readme"
+}
