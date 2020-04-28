@@ -146,13 +146,21 @@ var HTMLParser = function(html, handler) {
 
   function parseEndTag(tag, tagName) {
     // If no tag name is provided, clean shop
-    if (!tagName) var pos = 0;
-    // Find the closest opened tag of the same type
-    else for (var pos = stack.length - 1; pos >= 0; pos--) if (stack[pos] == tagName) break;
-
+    if (!tagName) {
+      var pos = 0;
+    } else {
+      // Find the closest opened tag of the same type
+      // eslint-disable-next-line no-redeclare
+      for (var pos = stack.length - 1; pos >= 0; pos--)
+        if (stack[pos] == tagName) {
+          break;
+        }
+    }
     if (pos >= 0) {
       // Close all the open elements, up the stack
-      for (var i = stack.length - 1; i >= pos; i--) if (handler.end) handler.end(stack[i]);
+      for (var i = stack.length - 1; i >= pos; i--) {
+        if (handler.end) handler.end(stack[i]);
+      }
 
       // Remove the open elements from the stack
       stack.length = pos;
@@ -167,35 +175,43 @@ function makeMap(str) {
   return obj;
 }
 
-function q(v) {
-  return '"' + v + '"';
-}
-
 function removeDOCTYPE(html) {
   return html
     .replace(/<\?xml.*\?>\n/, '')
-    .replace(/<!doctype.*\>\n/, '')
-    .replace(/<!DOCTYPE.*\>\n/, '');
+    .replace(/<!doctype.*>\n/, '')
+    .replace(/<!DOCTYPE.*>\n/, '');
 }
 
 function attachClassName(node) {
   if (node.name) {
     node.attrs = node.attrs || {};
-    node.attrs.class = (node.attrs.class || '') + ' ' + node.name;
-    node.attrs.class = node.attrs.class.trim();
+
+    const className = node.attrs.class || '';
+    const style = node.attrs.style || [];
+
+    if (Array.isArray(style)) {
+      node.attrs.style = style.join('');
+    }
+
+    if (!new RegExp('\\b' + node.name + '\\b').test(className)) {
+      node.attrs.class = (className + ' ' + node.name).trim();
+    }
   }
 
   return node;
 }
 
-var html2json = function html2json(html) {
+var html2json = function html2json(html = '') {
   html = removeDOCTYPE(html);
   var bufArray = [];
   var results = [];
   HTMLParser(html, {
     start: function(tag, attrs, unary) {
       // node for this element
-      var node = { type: 'node', name: tag };
+      var node = {
+        type: 'node',
+        name: tag,
+      };
       if (attrs.length !== 0) {
         node.attrs = attrs.reduce(function(pre, attr) {
           var name = attr.name;
@@ -253,7 +269,10 @@ var html2json = function html2json(html) {
       }
     },
     chars: function(text) {
-      var node = { type: 'text', text: text };
+      var node = {
+        type: 'text',
+        text: text,
+      };
       if (bufArray.length === 0) {
         results.push(attachClassName(node));
       } else {
@@ -265,7 +284,10 @@ var html2json = function html2json(html) {
       }
     },
     comment: function(text) {
-      var node = { node: 'comment', text: text };
+      var node = {
+        node: 'comment',
+        text: text,
+      };
       var parent = bufArray[0];
       if (parent.children === undefined) {
         parent.children = [];
@@ -276,4 +298,4 @@ var html2json = function html2json(html) {
   return results;
 };
 
-module.exports = html2json;
+export default html2json;
